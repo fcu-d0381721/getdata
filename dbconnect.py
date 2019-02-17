@@ -5,7 +5,7 @@ import numpy as np
 # 连接配置信息
 config = {
     'host': '127.0.0.1',
-    'port': 3306,
+    'port': 3307,
     'user': 'root',
     'password': '',
     'db': 'oneyear',
@@ -42,12 +42,14 @@ class connectDB():
         self.cursor.execute("SET NAMES utf8mb4;")
         self.cursor.execute("DROP TABLE IF EXISTS divide_%s"%(end_date))
         sql = """CREATE TABLE divide_%s (
+                        Number INT NOT NULL AUTO_INCREMENT,
                         vdid  VARCHAR(191),
                         datacollecttime VARCHAR(191),
                         vsrid VARCHAR(191),
                         speed INT,
                         laneoccupy FLOAT,
-                        volume INT )"""%(end_date)
+                        volume INT,
+                         PRIMARY KEY (Number))"""%(end_date)
         self.cursor.execute(sql)
 
         sql = """ALTER TABLE `divide_%s` CHANGE `vdid` `vdid` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci """%(end_date)
@@ -68,6 +70,7 @@ class connectDB():
             self.cursor.execute(sql)
             self.connection.commit()
         except:
+            self.connect()
             self.connection.rollback()
 
 

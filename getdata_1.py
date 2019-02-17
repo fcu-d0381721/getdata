@@ -8,11 +8,12 @@ import gzip
 from io import BytesIO
 from decimal import getcontext, Decimal
 import numpy as np
+import time
 from dbconnect import connectDB
 
 #要抓的時間區段
-EndDate = '20181130'
-StartDate = '20181105'
+EndDate = '20181107'
+StartDate = '20181107'
 end_date = ''
 minute_time = ''
 
@@ -113,6 +114,8 @@ def main():
             # jsonData +=\
             count = count + 1
             parseXML(result, count,x)
+            result.close()
+        time.sleep(1)
         count = 0
 
     x.exit()
