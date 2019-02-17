@@ -12,14 +12,14 @@ import time
 from dbconnect import connectDB
 
 #要抓的時間區段
-EndDate = '20181107'
-StartDate = '20181107'
+EndDate = '20181102'
+StartDate = '20181102'
 end_date = ''
 minute_time = ''
 
 
 
-def parseXML(tree,count,x):
+def parseXML(tree,x):
 
     temp = [()]
 
@@ -98,8 +98,8 @@ def main():
     total_days = math.floor((substract_time_day.total_seconds() / 86400))
 
     # 處理小時
-    EndTime = datetime.datetime.strptime('2359', "%H%M")
-    StartTime = datetime.datetime.strptime('0000', "%H%M")
+    EndTime = datetime.datetime.strptime('1036', "%H%M")
+    StartTime = datetime.datetime.strptime('1035', "%H%M")
     substract_time = EndTime - StartTime + datetime.timedelta(minutes=1)
     total_minutes = math.floor((substract_time.total_seconds() / 60))
     print(total_minutes)
@@ -120,16 +120,20 @@ def main():
                     result = requests.get("http://tisvcloud.freeway.gov.tw/history/vd/" + end_date + "/vd_value_" + minute_time + ".xml.gz",headers = headers)
                     result.encoding = 'utf8'
                     # jsonData +=\
-                    count = count + 1
                     sitemap = gzip.GzipFile(fileobj=BytesIO(result.content))
                     root = ET.parse(sitemap)
                     tree = root.getroot()
-                    parseXML(tree, count, x)
+                    parseXML(tree, x)
                     result.close()
                 except Exception as e:
-                    print(e)
-                    print('----------------------------------------------------------------------------' + end_date + " " + minute_time)
-                    continue
+                    if count < 5:
+                        count += 1
+                        print(e)
+                        print('----------------------------------------------------------------------------' + end_date + " " + minute_time)
+                        continue
+                    else:
+                        count = 0
+                        break
                 break
         time.sleep(1)
         count = 0
