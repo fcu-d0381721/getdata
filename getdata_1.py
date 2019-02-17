@@ -9,6 +9,7 @@ from io import BytesIO
 from decimal import getcontext, Decimal
 import numpy as np
 import time
+import socket
 from dbconnect import connectDB
 
 #要抓的時間區段
@@ -89,7 +90,7 @@ def main():
 
     global EndDate,StartDate,end_date,minute_time
     count = 0
-
+    socket.setdefaulttimeout(20)
     x = connectDB()
     # 處理日期
     StartDate = datetime.datetime.strptime(StartDate, "%Y%m%d")
@@ -117,9 +118,8 @@ def main():
             while True:
                 try:
                     headers = {'user-agent': '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'}
-                    result = requests.get("http://tisvcloud.freeway.gov.tw/history/vd/" + end_date + "/vd_value_" + minute_time + ".xml.gz",headers = headers)
+                    result = requests.get("http://tisvcloud.freeway.gov.tw/history/vd/" + end_date + "/vd_value_" + minute_time + ".xml.gz", headers=headers)
                     result.encoding = 'utf8'
-                    # jsonData +=\
                     sitemap = gzip.GzipFile(fileobj=BytesIO(result.content))
                     root = ET.parse(sitemap)
                     tree = root.getroot()
