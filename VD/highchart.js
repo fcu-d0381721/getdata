@@ -1,9 +1,9 @@
 $( document ).ready(function() {
-  Highcharts.chart('container', {
+  Highcharts.chart('rightbox', {
 
       chart: {
         scrollablePlotArea: {
-          minWidth: 700
+          minWidth: 500
         }
       },
       
@@ -15,11 +15,11 @@ $( document ).ready(function() {
       },
       
       title: {
-        text: 'Daily sessions at www.highcharts.com'
+        text: '流率與速率-時間圖'
       },
       
       subtitle: {
-        text: 'Source: Google Analytics'
+        text: ''
       },
       
       xAxis: {

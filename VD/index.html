@@ -13,11 +13,70 @@
         <script src="https://www.highcharts.com/media/com_demo/js/highslide.config.js" charset="utf-8"></script>
         <link rel="stylesheet" type="text/css" href="https://www.highcharts.com/media/com_demo/css/highslide.css" />
         <script type="text/javascript" language="javascript" src="./highchart.js" charset="utf-8"></script>
+        <link rel="stylesheet" href="./css/bootstrap.css" type="text/css">
         <link rel="stylesheet" href="./css/index.css" type="text/css">
     </head>
     <body>
-        <div id="container"></div>
+        <nav class="navbar navbar-dark bg-dark">
+            <span class="navbar-text">
+                VD資料檢索
+            </span>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-6 costom">
+                    <div id="leftbox">
+                        <nav class="navbar navbar-light bg-light">
+                                <span class="navbar-text">條件搜尋</span>
+                        </nav>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">速率小於</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                <span class="input-group-text">以下</span>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">在</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                <span class="input-group-text">內，速率下降</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                    <span class="input-group-text">以上</span>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">在</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                <span class="input-group-text">內，流率上升原流率的</span>
+                            </div>
+                            <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                    <span class="input-group-text">以上</span>
+                            </div>
+                        </div>
+                        <div id="box">
+                            <button type="button" class="btn btn-outline-dark">清除</button>
+                            <button type="button" class="btn btn-outline-success">送出</button> 
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 costom">
+                    <div id="rightbox"></div>
+                </div>
+            </div>
+        </div>
     </body>
-</html>>
+
+</html>
 
     
