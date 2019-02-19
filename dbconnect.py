@@ -5,10 +5,10 @@ import numpy as np
 # 连接配置信息
 config = {
     'host': '127.0.0.1',
-    'port': 3307,
+    'port': 3306,
     'user': 'root',
     'password': '',
-    'db': 'oneyear',
+    'db': 'one_year_undivide',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor,
 }
@@ -40,29 +40,28 @@ class connectDB():
 
         global now_time
         self.cursor.execute("SET NAMES utf8mb4;")
-        self.cursor.execute("DROP TABLE IF EXISTS divide_%s"%(end_date))
-        sql = """CREATE TABLE divide_%s (
+        self.cursor.execute("DROP TABLE IF EXISTS undivide_%s"%(end_date))
+        sql = """CREATE TABLE undivide_%s (
                         Number INT NOT NULL AUTO_INCREMENT,
                         vdid  VARCHAR(191),
                         datacollecttime VARCHAR(191),
-                        vsrid VARCHAR(191),
-                        speed INT,
+                        speed FLOAT,
                         laneoccupy FLOAT,
                         volume INT,
                          PRIMARY KEY (Number))"""%(end_date)
         self.cursor.execute(sql)
 
-        sql = """ALTER TABLE `divide_%s` CHANGE `vdid` `vdid` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci """%(end_date)
+        sql = """ALTER TABLE `undivide_%s` CHANGE `vdid` `vdid` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci """%(end_date)
         self.cursor.execute(sql)
-        sql = """ALTER TABLE `divide_%s` CHANGE `datacollecttime` `datacollecttime` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL""" % (end_date)
+        sql = """ALTER TABLE `undivide_%s` CHANGE `datacollecttime` `datacollecttime` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL""" % (end_date)
         self.cursor.execute(sql)
-        sql = """ALTER TABLE `divide_%s` CHANGE `vsrid` `vsrid` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci """ % (end_date)
-        self.cursor.execute(sql)
-        now_time = "divide_" + end_date
+        # sql = """ALTER TABLE `divide_%s` CHANGE `vsrid` `vsrid` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci """ % (end_date)
+        # self.cursor.execute(sql)
+        now_time = "undivide_" + end_date
 
     def insert_divide(self, temp):
         global now_time
-        sql = "INSERT INTO %s(vdid, datacollecttime, vsrid, speed, laneoccupy, volume) VALUES"%(now_time) + temp
+        sql = "INSERT INTO %s(vdid, datacollecttime, speed, laneoccupy, volume) VALUES"%(now_time) + temp
         # val = temp
         try:
             # print(vdid, datacollecttime, vsrid, speed, laneoccupy, volume)

@@ -13,8 +13,8 @@ import socket
 from dbconnect import connectDB
 
 #要抓的時間區段
-EndDate = '20181102'
-StartDate = '20181102'
+EndDate = '20181031'
+StartDate = '20180101'
 end_date = ''
 minute_time = ''
 
@@ -39,37 +39,38 @@ def parseXML(tree,x):
                     undivide_total_volume = 0
 
                     for lane in info:
-                        divide_total_volume = 0
+                        # divide_total_volume = 0
                         now_speed = int(lane.attrib["speed"])
                         now_laneoccupy = int(lane.attrib["laneoccupy"])
 
                         for cars in lane:
-                            divide_total_volume += int(cars.attrib["volume"])
+                            # divide_total_volume += int(cars.attrib["volume"])
                             undivide_total_speed += now_speed * int(cars.attrib["volume"])
                             undivide_total_laneoccupy += now_laneoccupy * int(cars.attrib["volume"])
                             undivide_total_volume += int(cars.attrib["volume"])
                             ###全部資料###
                             # print("vdid: " + info.attrib["vdid"] + " status: " + info.attrib["status"] + " datacollecttime: " + info.attrib["datacollecttime"] + " vsrdir: " + lane.attrib["vsrdir"] + " vsrid: " + lane.attrib["vsrid"] + " speed: " + lane.attrib["speed"] + " laneoccupy: " + lane.attrib["laneoccupy"] + " carid: " + cars.attrib["carid"] + " volume: " + cars.attrib["volume"])
 
-
-                        divide_total_laneoccupy = Decimal(float(lane.attrib["laneoccupy"]) / 1.21).quantize(Decimal('0.00'))
-
+                        # divide_total_laneoccupy = Decimal(float(lane.attrib["laneoccupy"]) / 1.21).quantize(Decimal('0.00'))
                         # 分車道
-                        if temp == [()]:
-                            # datacollecttime = datetime.datetime.strptime(info.attrib["datacollecttime"], "%Y/%m/%d %H:%M:%S")
-                            temp = [(info.attrib["vdid"], info.attrib["datacollecttime"], lane.attrib["vsrid"], lane.attrib["speed"], str(divide_total_laneoccupy), divide_total_volume*60)]
-
-                        else:
-                            # datacollecttime = datetime.datetime.strptime(info.attrib["datacollecttime"], "%Y/%m/%d %H:%M:%S")
-                            temp = temp + [(info.attrib["vdid"], info.attrib["datacollecttime"], lane.attrib["vsrid"], lane.attrib["speed"], str(divide_total_laneoccupy), divide_total_volume*60)]
+                        # if temp == [()]:
+                        #     # datacollecttime = datetime.datetime.strptime(info.attrib["datacollecttime"], "%Y/%m/%d %H:%M:%S")
+                        #     temp = [(info.attrib["vdid"], info.attrib["datacollecttime"], lane.attrib["vsrid"], lane.attrib["speed"], str(divide_total_laneoccupy), divide_total_volume*60)]
+                        # else:
+                        #     # datacollecttime = datetime.datetime.strptime(info.attrib["datacollecttime"], "%Y/%m/%d %H:%M:%S")
+                        #     temp = temp + [(info.attrib["vdid"], info.attrib["datacollecttime"], lane.attrib["vsrid"], lane.attrib["speed"], str(divide_total_laneoccupy), divide_total_volume*60)]
                         # print("vdid: " + info.attrib["vdid"] + " datacollecttime: " + info.attrib["datacollecttime"] + " vsrid: " + lane.attrib["vsrid"] + " speed: " + lane.attrib["speed"] + " laneoccupy: " + str(divide_total_laneoccupy) + " volume: " + str(divide_total_volume*60))
 
-
-                    # if undivide_total_volume != 0:
-                    #     undivide_total_speed = Decimal(undivide_total_speed / undivide_total_volume).quantize(Decimal('0.00'))
-                    #     undivide_total_laneoccupy = Decimal((undivide_total_laneoccupy / undivide_total_volume) / 1.21).quantize(Decimal('0.00'))
+                    if undivide_total_volume != 0:
+                        undivide_total_speed = Decimal(undivide_total_speed / undivide_total_volume).quantize(Decimal('0.00'))
+                        undivide_total_laneoccupy = Decimal((undivide_total_laneoccupy / undivide_total_volume) / 1.21).quantize(Decimal('0.00'))
 
                     # 不分車道
+                    if temp == [()]:
+                        temp = [(info.attrib["vdid"], info.attrib["datacollecttime"], str(undivide_total_speed), str(undivide_total_laneoccupy), str(undivide_total_volume*60))]
+                    else:
+                        temp = temp + [(info.attrib["vdid"], info.attrib["datacollecttime"], str(undivide_total_speed), str(undivide_total_laneoccupy), str(undivide_total_volume*60))]
+
                     # print("vdid: " + info.attrib["vdid"] + " datacollecttime: " + info.attrib["datacollecttime"] + " speed: " + str(undivide_total_speed) + " laneoccupy: " + str(undivide_total_laneoccupy) + " volume: " + str(undivide_total_volume*60))
 
             print("^___^")
@@ -84,12 +85,11 @@ def parseXML(tree,x):
         break
 
 
-
-
 def main():
 
     global EndDate,StartDate,end_date,minute_time
     count = 0
+
     socket.setdefaulttimeout(20)
     x = connectDB()
     # 處理日期
@@ -99,8 +99,8 @@ def main():
     total_days = math.floor((substract_time_day.total_seconds() / 86400))
 
     # 處理小時
-    EndTime = datetime.datetime.strptime('1036', "%H%M")
-    StartTime = datetime.datetime.strptime('1035', "%H%M")
+    EndTime = datetime.datetime.strptime('2359', "%H%M")
+    StartTime = datetime.datetime.strptime('0000', "%H%M")
     substract_time = EndTime - StartTime + datetime.timedelta(minutes=1)
     total_minutes = math.floor((substract_time.total_seconds() / 60))
     print(total_minutes)
@@ -118,8 +118,9 @@ def main():
             while True:
                 try:
                     headers = {'user-agent': '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36'}
-                    result = requests.get("http://tisvcloud.freeway.gov.tw/history/vd/" + end_date + "/vd_value_" + minute_time + ".xml.gz", headers=headers)
+                    result = requests.get("http://tisvcloud.freeway.gov.tw/history/vd/" + end_date + "/vd_value_" + minute_time + ".xml.gz",headers = headers)
                     result.encoding = 'utf8'
+                    # jsonData +=\
                     sitemap = gzip.GzipFile(fileobj=BytesIO(result.content))
                     root = ET.parse(sitemap)
                     tree = root.getroot()
