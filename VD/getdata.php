@@ -1,29 +1,33 @@
 <?php
+require 'C:/composer/vendor/autoload.php';
 // Configuration
-$dbhost = 'localhost';
-$dbname = 'OneYear';
-$collection = 'testCollection';
- 
-// Connect to mongo database
-$mongoClient = new \MongoClient('mongodb://' . $dbhost);
-$db = $mongoClient->$dbname;
- 
-// Get the users collection
-$cUsers = $db->$collection;
- 
-// Insert object
-$user = array(
-    'first_name' => 'SJ',
-    'last_name' => 'Mongo',
-    'roles' => array('developer','bugmaker')
-);
- 
-$user = array(
-    'name'=> '2018 ithome鐵人賽'
-);
-$user = $cUsers->findOne($user);
- 
-// output
-print_r($user);
+
+// Connect
+$manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+// var_dump($manager);
+
+// Insert
+// $bulk = new MongoDB\Driver\BulkWrite(['ordered' => true]);
+// $bulk->insert(['id' => 6, 'hello' => 'hi', 'name' => 'cindy']);
+// $result = $manager->executeBulkWrite('OneYear.testCollection', $bulk);
+
+
+// Query
+$filter = [
+    'hello' => "hi",
+    'id' => 6,
+    'name' => "cindy",
+    // 'datacollecttime' => "2018-11-01 00:00:00",
+    // // ['$regex' => '/.2018-11-36./']
+    // 'speed' => ['$gt' => 60],
+];
+$options = [
+    'projection' => ['_id' => 0],
+];
+$query = new MongoDB\Driver\Query($filter, $options);
+$rows = $manager->executeQuery('OneYear.testCollection', $query); // $mongo contains the connection object to MongoDB
+foreach($rows as $r){
+   print_r($r);
+}
 
 ?>
