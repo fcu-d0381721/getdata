@@ -12,6 +12,10 @@ $( document ).ready(function() {
         beforeParse: function(csv) {
           return csv.replace(/\n\n/g, '\n');
         }
+        // rowsURL: 'https://demo-live-data.highcharts.com/time-rows.json',
+        // firstRowAsNames: false,
+        // enablePolling: true
+
       },
       
       title: {
@@ -22,17 +26,20 @@ $( document ).ready(function() {
       },
       
       subtitle: {
-        text: ''
+        text: 'nfbVD-N1-S--0.008-M-LOOP',
+        style: {
+          fontFamily:'Microsoft JhengHei' 
+        }
       },
       
       xAxis: {
-        tickInterval: 7 * 24 * 3600 * 1000, // one week
+        tickInterval: 24*60*60*1000*7  , // one day
         tickWidth: 0,
-        gridLineWidth: 1,
+        gridLineWidth: 0,
         labels: {
-          align: 'left',
-          x: 3,
-          y: -3
+          align: 'center',
+          x: 0,
+          y: 10
         }
       },
       

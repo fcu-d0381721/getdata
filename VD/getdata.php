@@ -1,3 +1,6 @@
+// I don't want to use this!!
+// use node.js please veve
+
 <?php
 require 'C:/composer/vendor/autoload.php';
 // Configuration
@@ -14,18 +17,17 @@ $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
 // Query
 $filter = [
-    'hello' => "hi",
-    'id' => 6,
-    'name' => "cindy",
-    // 'datacollecttime' => "2018-11-01 00:00:00",
+    'datacollecttime' => "2018-11-01 00:00:00",
+    'vdid' => "nfbVD-N1-S-0.990-N-LOOP",
     // // ['$regex' => '/.2018-11-36./']
-    // 'speed' => ['$gt' => 60],
+    'speed' => ['$gt' => 60],
 ];
 $options = [
     'projection' => ['_id' => 0],
 ];
 $query = new MongoDB\Driver\Query($filter, $options);
-$rows = $manager->executeQuery('OneYear.testCollection', $query); // $mongo contains the connection object to MongoDB
+$rows = $manager->executeQuery('bin.unDivide', $query); // $mongo contains the connection object to MongoDB
+
 foreach($rows as $r){
    print_r($r);
 }
