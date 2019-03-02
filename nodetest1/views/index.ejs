@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/data.js"></script>
+        <script src="https://code.highcharts.com/modules/series-label.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+        <link rel="stylesheet" href="https://apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+        <script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="https://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+        <!-- Additional files for the Highslide popup effect -->
+        <script src="https://www.highcharts.com/media/com_demo/js/highslide-full.min.js"></script>
+        <script src="https://www.highcharts.com/media/com_demo/js/highslide.config.js" charset="utf-8"></script>
+        <link rel="stylesheet" type="text/css" href="https://www.highcharts.com/media/com_demo/css/highslide.css" />
+        <script type="text/javascript" language="javascript" src="/javascripts/highchart.js" charset="utf-8"></script>
+        <link rel="stylesheet" href="/stylesheets/bootstrap.css" type="text/css">
+        <link rel="stylesheet" href="/stylesheets/index.css" type="text/css">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-dark bg-dark">
+            <span class="navbar-text font">
+                VD資料檢索
+            </span>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-6 costom">
+                    <div id="leftbox">
+                        <nav class="navbar navbar-light color-left">
+                                <span class="navbar-text font">條件搜尋</span>
+                        </nav>
+                        <p class = "font">日期選擇：<input type="text" id="datepicker"></p>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font">速率小於</span>
+                            </div>
+                            <input type="text" class="form-control" id="speed_small" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                <span class="input-group-text font">以下</span>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font">在</span>
+                            </div>
+                            <input type="text" class="form-control" id="time_limit" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                <span class="input-group-text font">內，速率下降</span>
+                            </div>
+                            <input type="text" class="form-control" id="speed_big" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                    <span class="input-group-text font">以上</span>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font">在</span>
+                            </div>
+                            <input type="text" class="form-control" id="time2_limit" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                <span class="input-group-text font">內，流率上升原流率的</span>
+                            </div>
+                            <input type="text" class="form-control" id="laneoccupy_big" aria-label="Amount (to the nearest dollar)">
+                            <div class="input-group-append">
+                                    <span class="input-group-text font">以上</span>
+                            </div>
+                        </div>
+                        <div id="box">
+                            <button type="button" class="btn btn-outline-dark font" id="reset">清除</button>
+                            <button type="button" class="btn btn-outline-success font-color" id="success">送出</button> 
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 costom">
+                    <div id = "rightbox">
+                        <nav class="navbar navbar-light color-right">
+                                <span class="navbar-text font">車道篩選</span>
+                        </nav>
+                        <div id="rightdown">
+                            <%
+                            for(var i in name){ %>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id ="acheckbox<%=i%>">
+                                    <label class="custom-control-label" for="acheckbox<%=i%>"><%=name[i].vdid%></label>
+                                </div> 
+                
+                            <% } %>   
+                        </div>
+                        <div id="box">
+                            <button type="button" class="btn btn-outline-info font-color" id="success">輸出圖檔</button> 
+                        </div>
+                    </div>
+                </div>
+                <div id="downbox"></div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" language="javascript" src="/javascripts/index.js" charset="utf-8"></script> 
+</html>

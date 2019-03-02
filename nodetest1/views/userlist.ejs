@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>USERLIST</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/data.js"></script>
+        <script src="https://code.highcharts.com/modules/series-label.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+        <link rel="stylesheet" href="https://apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+        <script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="https://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+
+        <!-- Additional files for the Highslide popup effect -->
+        <script src="https://www.highcharts.com/media/com_demo/js/highslide-full.min.js"></script>
+        <script src="https://www.highcharts.com/media/com_demo/js/highslide.config.js" charset="utf-8"></script>
+        <link rel="stylesheet" type="text/css" href="https://www.highcharts.com/media/com_demo/css/highslide.css" />
+        <script type="text/javascript" language="javascript" src="/javascripts/highchart.js" charset="utf-8"></script>
+        <link rel="stylesheet" href="/stylesheets/bootstrap.css" type="text/css">
+        <link rel="stylesheet" href="/stylesheets/index.css" type="text/css">
+
+</head>
+
+<body>
+    <h1>Userlist</h1>
+    <ul>
+
+        <%
+        for(var i in name){
+        %>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id ="acheckbox<%=i%>">
+                    <label class="custom-control-label" for="acheckbox<%=i%>"><%=name[i].vdid%></label>
+                </div> 
+                
+            <% } %>
+    </ul>
+</body>
+
+</html>
