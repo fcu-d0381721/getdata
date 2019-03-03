@@ -34,46 +34,48 @@
                         <nav class="navbar navbar-light color-left">
                                 <span class="navbar-text font">條件搜尋</span>
                         </nav>
-                        <p class = "font">日期選擇：<input type="text" id="datepicker"></p>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text font">速率小於</span>
+                        <form action="/users/search" method="post">
+                            <p class = "font">日期選擇：<input type="text" id="datepicker" name="datepicker"></p>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font">速率小於</span>
+                                </div>
+                                <input type="text" class="form-control" id="speed_small" name="speed_small" aria-label="Amount (to the nearest dollar)">
+                                <div class="input-group-append">
+                                    <span class="input-group-text font">以下</span>
+                                </div>
                             </div>
-                            <input type="text" class="form-control" id="speed_small" aria-label="Amount (to the nearest dollar)">
-                            <div class="input-group-append">
-                                <span class="input-group-text font">以下</span>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font">在</span>
+                                </div>
+                                <input type="text" class="form-control" id="time_limit" name="time_limit" aria-label="Amount (to the nearest dollar)">
+                                <div class="input-group-append">
+                                    <span class="input-group-text font">內，速率下降</span>
+                                </div>
+                                <input type="text" class="form-control" id="speed_big" name="speed_big" aria-label="Amount (to the nearest dollar)">
+                                <div class="input-group-append">
+                                        <span class="input-group-text font">以上</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text font">在</span>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font">在</span>
+                                </div>
+                                <input type="text" class="form-control" id="time2_limit" name="time2_limit" aria-label="Amount (to the nearest dollar)">
+                                <div class="input-group-append">
+                                    <span class="input-group-text font">內，流率上升原流率的</span>
+                                </div>
+                                <input type="text" class="form-control" id="laneoccupy_big" name="laneoccupy_big" aria-label="Amount (to the nearest dollar)">
+                                <div class="input-group-append">
+                                        <span class="input-group-text font">以上</span>
+                                </div>
                             </div>
-                            <input type="text" class="form-control" id="time_limit" aria-label="Amount (to the nearest dollar)">
-                            <div class="input-group-append">
-                                <span class="input-group-text font">內，速率下降</span>
+                            <div id="box">
+                                <button type="button" class="btn btn-outline-dark font" id="reset">清除</button>
+                                <button type="submit" class="btn btn-outline-success font-color" id="success">送出</button> 
                             </div>
-                            <input type="text" class="form-control" id="speed_big" aria-label="Amount (to the nearest dollar)">
-                            <div class="input-group-append">
-                                    <span class="input-group-text font">以上</span>
-                            </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text font">在</span>
-                            </div>
-                            <input type="text" class="form-control" id="time2_limit" aria-label="Amount (to the nearest dollar)">
-                            <div class="input-group-append">
-                                <span class="input-group-text font">內，流率上升原流率的</span>
-                            </div>
-                            <input type="text" class="form-control" id="laneoccupy_big" aria-label="Amount (to the nearest dollar)">
-                            <div class="input-group-append">
-                                    <span class="input-group-text font">以上</span>
-                            </div>
-                        </div>
-                        <div id="box">
-                            <button type="button" class="btn btn-outline-dark font" id="reset">清除</button>
-                            <button type="button" class="btn btn-outline-success font-color" id="success">送出</button> 
-                        </div>
+                        </form>
                     </div>
                 </div>
                 <div class="col-6 costom">
@@ -81,19 +83,21 @@
                         <nav class="navbar navbar-light color-right">
                                 <span class="navbar-text font">車道篩選</span>
                         </nav>
-                        <div id="rightdown">
-                            <%
-                            for(var i in name){ %>
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id ="acheckbox<%=i%>">
-                                    <label class="custom-control-label" for="acheckbox<%=i%>"><%=name[i].vdid%></label>
-                                </div> 
-                
-                            <% } %>   
-                        </div>
-                        <div id="box">
-                            <button type="button" class="btn btn-outline-info font-color" id="success">輸出圖檔</button> 
-                        </div>
+                        <form action="/users/charts" method="post">
+                            <div id="rightdown">
+                                <%
+                                for(var i in name){ %>
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id ="acheckbox<%=i%>" name="<%=name[i].vdid%>">
+                                        <label class="custom-control-label" for="acheckbox<%=i%>" value="<%=name[i].vdid%>"><%=name[i].vdid%></label>
+                                    </div> 
+                    
+                                <% } %>   
+                            </div>
+                            <div id="box">
+                                <button type="submit" class="btn btn-outline-info font-color" id="success">輸出圖檔</button> 
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div id="downbox"></div>

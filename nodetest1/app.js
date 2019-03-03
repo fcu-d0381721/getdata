@@ -4,15 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
-
+var mongo = require('mongodb');
+var monk = require('monk');
+var jsonQuery  = require('json-query');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 
-var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/runoob');
 
+// mongoDB,因為callback的特性，不能全部寫在這裡，無法被返回
+var mongoUtil = require( './mongoUtil' );
 var app = express();
 
 // view engine setup
@@ -27,29 +28,23 @@ app.use(function(req, res, next) {
   });
 app.use(bodyParser.json());                        
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
-
-
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(function(req,res,next){
-  req.db = db;
-  next();
-});
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
 });
-
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -59,16 +54,6 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
-app.get('/', function(req, res) {
-  res.render('index', { title: 'The index page!' })
-});
-
-app.post('/app', function(req, res){
-	var obj = {};
-	console.log('body: ' + JSON.stringify(req.body));
-    res.send(req.body);
-    //db connect ....
 });
 
 console.log("Express server listening on port 3000...");
