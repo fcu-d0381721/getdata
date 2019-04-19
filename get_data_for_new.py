@@ -13,8 +13,8 @@ import socket
 from dbconnect_for_new import connectDB
 
 #要抓的時間區段
-EndDate = '20181231'
-StartDate = '20180101'
+EndDate = '20180228'
+StartDate = '20180201'
 end_date = ''
 minute_time = ''
 
@@ -59,22 +59,19 @@ def parseXML(tree, temp):
 
 
 def UpAndInsert(x, createmonth, temp):
-    # print(temp)
+    print(temp)
     for i in temp:
         result = x.query_table_for_show()
         # print(result)
         t = str(createmonth) + "-" + str(i)
         if t not in result:
             x.create(t)
-            data = temp.get(str(i))
-            data = str(data)[1:-1]
-            x.insert_undivide(data)
         else:
             x.getcode(t)
-            data = temp.get(str(i))
-            data = str(data)[1:-1]
-            # print(i)
-            x.insert_undivide(data)
+        data = temp.get(str(i))
+        data = str(data)[1:-1]
+        # print(i)
+        x.insert_undivide(data)
     print('--------success insert--------')
 
 

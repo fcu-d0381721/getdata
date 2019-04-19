@@ -8,7 +8,7 @@ config = {
     'port': 3306,
     'user': 'root',
     'password': '',
-    'db': 'unDivide',
+    'db': 'unDivide1',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor,
 }
@@ -41,7 +41,7 @@ class connectDB():
         result = self.cursor.fetchall()
         for i in range(len(result)):
             # print(result[i].get('Tables_in_unDivide'))
-            table.append(result[i].get('Tables_in_unDivide'))
+            table.append(result[i].get('Tables_in_unDivide1'))
         return table
 
     def getcode(self, code):
