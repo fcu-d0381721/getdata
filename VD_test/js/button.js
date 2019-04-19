@@ -100,10 +100,13 @@ $( document ).ready(function() {
                     var dataset = ConvertToCSV(jsonObject);
                     if(complete.second_value.length>=2){
                         temp = SplitData(dataset,complete.second_value.length);
+                        console.log(temp)
                         for (var i=0;i<complete.second_value.length;i++){
+                            createcharts(i);
                             updateFromMultiCSV(temp[i], 'container', i);
                         }
                     }else{
+                        createcharts(1);
                         updateFromCSV(dataset, 'container', 1);
                     }
                     
@@ -176,7 +179,7 @@ $( document ).ready(function() {
         rows = dataset.split("\n");
         rows.shift();
         rows.pop();
-        lon = rows.length/2;
+        lon = rows.length/len;
         for(var i = 0; i<len;i++){
             tArray[i] = new Array();
             for(var j=0;j<lon;j++){
@@ -188,9 +191,8 @@ $( document ).ready(function() {
     }
 
     function updateFromCSV(csv, containerName, seriesNumber) {
-        $(".row").append("<div id='container" + seriesNumber + "' class = 'temp' style='width: 100%; height: 100%; margin: 0 auto;float:right;'></div>");
+        
         $(".row").append("<ol id = 'space" + seriesNumber + "'  style='width: 100%; background-color:white; border: 1px solid #ced4da; border-radius: 0.25rem; height: 100px; overflow-y: auto; padding:5px; font-family: \'Microsoft JhengHei\';'></ol>")
-        createcharts(seriesNumber)
         chart = $('#container' + seriesNumber).highcharts()
         var csv = csv
         var second_filter = {
@@ -409,9 +411,8 @@ $( document ).ready(function() {
         }
     }
     function updateFromMultiCSV(csv, containerName, seriesNumber) {
-        $(".row").append("<div id='container" + seriesNumber + "' class = 'temp' style='width: 100%; height: 100%; margin: 0 auto;float:right;'></div>");
+        
         $(".row").append("<ol id = 'space" + seriesNumber + "'  style='width: 100%; background-color:white; border: 1px solid #ced4da; border-radius: 0.25rem; height: 100px; overflow-y: auto; padding:5px; font-family: \'Microsoft JhengHei\';'></ol>")
-        createcharts(seriesNumber)
         chart = $('#container' + seriesNumber).highcharts()
         var second_filter = {
             speed_time : 0,
@@ -459,27 +460,10 @@ $( document ).ready(function() {
         rows.forEach(function(row, index) {
             
             var fields = row.split(",");
-            if (temp==""){
-                name.push(fields[1]);
-                temp = fields[1];
-                speed.push([fields[2],parseFloat(fields[3])]);
-                volume.push([fields[2],parseFloat(fields[5])]);
-            }else if(temp!=fields[1]){
-                total_speed.push(speed);
-                total_volume.push(volume);
-                speed = [];
-                volume = [];
-                // if (typeof fields[1] !== 'undefined'){
-                //     name.push(fields[1]);
-                // }
-                temp = fields[1];
-                speed.push([fields[2],parseFloat(fields[3])]);
-                volume.push([fields[2],parseFloat(fields[5])]);
-            }else{
-                // date.push(fields[2]);
-                speed.push([fields[2],parseFloat(fields[3])]);
-                volume.push([fields[2],parseFloat(fields[5])]);
-            }
+            name = fields[1]
+            speed.push([fields[2],parseFloat(fields[3])]);
+            volume.push([fields[2],parseFloat(fields[5])]);
+
             
             if (second_filter.speed_queue.size()<second_filter.speed_time-1) {
                 second_filter.speed_queue.enqueue(parseFloat(fields[3]));
@@ -604,26 +588,25 @@ $( document ).ready(function() {
         while (chart.series.length > 0) {
             chart.series[0].remove(true);
         }
-        if(total_speed.length==1){
-            chart.update({
-                subtitle: {
-                    text: name[0]
-                }
-            })
-            chart.addSeries({
-                type: 'line',
-                name: 'speed',
-                data: total_speed[0],
-                color: 'purple'
-            });
-    
-            chart.addSeries({
-                type: 'line',
-                name: 'volume',
-                data: total_volume[0],
-                color: 'orange'
-            });
-        }
+        chart.update({
+            subtitle: {
+                text: name
+            }
+        })
+        chart.addSeries({
+            type: 'line',
+            name: 'speed',
+            data: speed,
+            color: 'purple'
+        });
+
+        chart.addSeries({
+            type: 'line',
+            name: 'volume',
+            data: volume,
+            color: 'orange'
+        });
+        
     }
 
     function Queue() {
@@ -658,7 +641,20 @@ $( document ).ready(function() {
     }
 
     function createcharts(seriesNumber){
-        $('#container'+seriesNumber).highcharts({
+
+        // var body = document.body;
+        // var highchart = document.createElement('div');  //建立tag = div
+        // highchart.setAttribute("id", 'container'+seriesNumber);   //將剛剛建立的tag，將其id命名為傳入變數
+        // highchart.setAttribute("class", "temp");
+        // highchart.style.width = '100%';    //對tag設立屬性
+        // highchart.style.height = '100%';
+        // highchart.style.margin = '0 auto';
+        // highchart.style.float
+        // body.appendChild(highchart); 
+        $(".row").append("<div id='container" + seriesNumber + "' class = 'temp' style='width: 100%; height: 100%; margin: 0 auto;float:right;'></div>");
+
+        
+        $('#container' + seriesNumber).highcharts({
             chart: {
                 scrollablePlotArea: {
                     minWidth: 500
