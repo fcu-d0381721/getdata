@@ -30,6 +30,10 @@ $( document ).ready(function() {
         $('.row .temp').remove();
         $('ol').remove();
         $('.custom-control-input:checkbox').removeAttr('checked');
+        complete.first_value = false;
+        complete.second_value = false;
+        complete.third_value = false;
+        selected = [];
     };
 
     document.getElementById("success").onclick = function() {
