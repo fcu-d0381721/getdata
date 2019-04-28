@@ -8,7 +8,7 @@ config = {
     'port': 3306,
     'user': 'root',
     'password': '',
-    'db': 'unDivide1',
+    'db': 'unDivide',
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor,
 }
@@ -35,12 +35,13 @@ class connectDB():
         self.cursor.execute("SET character_set_connection = utf8mb4")
 
     def query_table_for_show(self):
+        print("apple")
         table = []
         sql = "show TABLES"
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
         for i in range(len(result)):
-            # print(result[i].get('Tables_in_unDivide'))
+            print(result[i].get('Tables_in_unDivide1'))
             table.append(result[i].get('Tables_in_unDivide1'))
         return table
 

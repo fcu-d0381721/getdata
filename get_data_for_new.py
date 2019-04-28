@@ -13,8 +13,8 @@ import socket
 from dbconnect_for_new import connectDB
 
 #要抓的時間區段
-EndDate = '20180228'
-StartDate = '20180201'
+EndDate = '20181231'
+StartDate = '20180101'
 end_date = ''
 minute_time = ''
 
@@ -32,11 +32,14 @@ def parseXML(tree, temp):
                     for lane in info:
                         now_speed = int(lane.attrib["speed"])
                         now_laneoccupy = int(lane.attrib["laneoccupy"])
-
+                        if now_speed < 0:
+                            now_speed = 0
+                            now_laneoccupy = 0
                         for cars in lane:
                             undivided_total_speed += now_speed * int(cars.attrib["volume"])
                             undivide_total_laneoccupy += now_laneoccupy * int(cars.attrib["volume"])
-                            undivided_total_volume += int(cars.attrib["volume"])
+                            if int(cars.attrib["volume"]) >= 0:
+                                undivided_total_volume += int(cars.attrib["volume"])
 
                     if undivided_total_volume != 0:
                         undivided_total_speed = Decimal(undivided_total_speed / undivided_total_volume).quantize(
@@ -59,19 +62,22 @@ def parseXML(tree, temp):
 
 
 def UpAndInsert(x, createmonth, temp):
-    print(temp)
+    # print(temp)
     for i in temp:
         result = x.query_table_for_show()
         # print(result)
         t = str(createmonth) + "-" + str(i)
         if t not in result:
             x.create(t)
+            data = temp.get(str(i))
+            data = str(data)[1:-1]
+            x.insert_undivide(data)
         else:
             x.getcode(t)
-        data = temp.get(str(i))
-        data = str(data)[1:-1]
-        # print(i)
-        x.insert_undivide(data)
+            data = temp.get(str(i))
+            data = str(data)[1:-1]
+            # print(i)
+            x.insert_undivide(data)
     print('--------success insert--------')
 
 
