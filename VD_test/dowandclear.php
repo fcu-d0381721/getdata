@@ -3,7 +3,7 @@
     $x = new DBClass();
 
     $date = ["2018-01-01", "2018-01-01"];
-    $vdid = ["nfbVD-N1-S-1.740-M-LOOP"];
+    $vdid = ["nfbVD-N1-S-1.740-M-LOOP","nfbVD-N1-S-1.950-M-RS"];
     // $date = $_POST['date'];
     // $vdid = $_POST['vdid'];
     
@@ -24,8 +24,11 @@
             $startday = $temp."/".$stack[1];
             $howmanyday = (int)$stack[3]-(int)$stack[1];
             $x->queryforsinglemonth($table,$startday,$howmanyday);
+        }
+        if(count($vdid)>1){
             $x->data_clear();
-            // print_r($x->select_result);
+        }else{
+            $x->data_clear_double();
         }
     }else{
         foreach ($vdid as $value){
@@ -36,7 +39,12 @@
             $endday = $stack1[0]."/".$stack1[4]."/".$stack1[5];
             $howmanyday = (int)$stack1[5]-1;
             $x->queryformutlimonth($value,$year,$firstday,$startday,"/01",$howmanymonth,$howmanyday);
+            $x->data_clear_double();
+        }
+        if(count($vdid)>1){
             $x->data_clear();
+        }else{
+            $x->data_clear_double();
         }
     }
     echo json_encode($x->tt);

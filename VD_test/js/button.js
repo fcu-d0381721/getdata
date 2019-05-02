@@ -104,15 +104,12 @@ $( document ).ready(function() {
                 }, 
                 'dataType': 'text', 
                 'success': function(result){ 
-
                     console.log("success third"); 
                     $('.row .temp').remove();
                     $('ol').remove();
                     var jsonObject = JSON.stringify(jQuery.parseJSON(result));
-                    // console.log(jsonObject)
                     var dataset = ConvertToCSV(jsonObject);
-                    // console.log(dataset)
-
+                    console.log(dataset)
                     if(complete.second_value.length>=2){
                         temp = SplitData(dataset,complete.second_value.length);
                         console.log(temp)
@@ -415,14 +412,14 @@ $( document ).ready(function() {
                 type: 'line',
                 name: 'speed',
                 data: total_speed[0],
-                color: 'purple'
+                color: 'orange'
             });
     
             chart.addSeries({
                 type: 'line',
                 name: 'volume',
                 data: total_volume[0],
-                color: 'orange'
+                color: 'purple'
             });
         }
     }
@@ -612,14 +609,14 @@ $( document ).ready(function() {
             type: 'line',
             name: 'speed',
             data: speed,
-            color: 'purple'
+            color: 'orange'
         });
 
         chart.addSeries({
             type: 'line',
             name: 'volume',
             data: volume,
-            color: 'orange'
+            color: 'purple'
         });
         
     }

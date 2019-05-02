@@ -71,7 +71,6 @@ class DBClass {
         array_push($this->tt,$temp);
         for($i=1;$i<count($this->select_result);$i++){
             $temp = array();
-            // print_r($this->select_result[$i]);
             $total_volume = 0;
             $total_speed = 0;
             $total_laneoccupy = 0;
@@ -96,7 +95,42 @@ class DBClass {
             $temp[5] = $total_volume;
             array_push($this->tt,$temp);
         }
-        // print_r($this->tt);
+    }
+    public function data_clear_double(){
+        $temp = array();
+        $temp[0] = "Number";
+        $temp[1] = "Vdid";
+        $temp[2] = "Time";
+        $temp[3] = "Speed";
+        $temp[4] = "Laneoccupy";
+        $temp[5] = "Volume";
+        array_push($this->tt,$temp);
+        for($i=1;$i<count($this->select_result[1]);$i++){
+            $temp = array();
+            $total_volume = 0;
+            $total_speed = 0;
+            $total_laneoccupy = 0;
+            for($j=5;$j<=20;$j+=3){
+                $total_volume += $this->select_result[$i][$j];
+            }
+            for($j=3;$j<=20;$j+=3){
+                $total_speed += $this->select_result[$i][$j]*$this->select_result[$i][$j+2];
+            }
+            for($j=4;$j<=19;$j+=3){
+                $total_laneoccupy += $this->select_result[$i][$j]*$this->select_result[$i][$j+1];
+            }
+            if($total_volume>0){
+                $total_speed = $total_speed/$total_volume;
+                $total_laneoccupy = $total_laneoccupy/$total_volume;
+            }
+            $temp[0] = $this->select_result[$i][0];
+            $temp[1] = $this->select_result[$i][1];
+            $temp[2] = $this->select_result[$i][2];
+            $temp[3] = $total_speed;
+            $temp[4] = $total_laneoccupy;
+            $temp[5] = $total_volume;
+            array_push($this->tt,$temp);
+        }
     }
     public function queryforsinglemonth($table,$startday,$howmanyday){
 
