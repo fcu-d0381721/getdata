@@ -10,7 +10,7 @@ from decimal import getcontext, Decimal
 import numpy as np
 import time
 import socket
-from ff import connectDB
+from dbconnect_for_new import connectDB
 
 #要抓的時間區段
 EndDate = '20180101'
