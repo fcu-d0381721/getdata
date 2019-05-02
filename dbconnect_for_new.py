@@ -35,14 +35,14 @@ class connectDB():
         self.cursor.execute("SET character_set_connection = utf8mb4")
 
     def query_table_for_show(self):
-        print("apple")
+        # print("apple")
         table = []
         sql = "show TABLES"
         self.cursor.execute(sql)
         result = self.cursor.fetchall()
         for i in range(len(result)):
-            print(result[i].get('Tables_in_unDivide1'))
-            table.append(result[i].get('Tables_in_unDivide1'))
+            # print(result[i].get('Tables_in_unDivide'))
+            table.append(result[i].get('Tables_in_unDivide'))
         return table
 
     def getcode(self, code):
@@ -52,30 +52,47 @@ class connectDB():
     def create(self, name):
 
         global now_time
-        self.cursor.execute("SET NAMES utf8mb4;")
+        try:
+            self.cursor.execute("SET NAMES utf8mb4;")
 
-        sql = """CREATE TABLE `%s` (
-                        Number INT NOT NULL AUTO_INCREMENT,
-                        vdid  VARCHAR(191),
-                        datacollecttime VARCHAR(191),
-                        speed VARCHAR(191),
-                        laneoccupy VARCHAR(191),
-                        volume VARCHAR(191),
-                         PRIMARY KEY (Number))"""%(name)
-        self.cursor.execute(sql)
+            sql = """CREATE TABLE `%s` (
+                            Number INT NOT NULL AUTO_INCREMENT,
+                            vdid  VARCHAR(191),
+                            time VARCHAR(191),
+                            lane_1_speed float,
+                            lane_1_laneoccupy float,
+                            lane_1_volume float,
+                            lane_2_speed float,
+                            lane_2_laneoccupy float,
+                            lane_2_volume float,
+                            lane_3_speed float,
+                            lane_3_laneoccupy float,
+                            lane_3_volume float,
+                            lane_4_speed float,
+                            lane_4_laneoccupy float,
+                            lane_4_volume float,
+                            lane_5_speed float,
+                            lane_5_laneoccupy float,
+                            lane_5_volume float,
+                            lane_6_speed float,
+                            lane_6_laneoccupy float,
+                            lane_6_volume float,
+                             PRIMARY KEY (Number))"""%(name)
+            self.cursor.execute(sql)
 
-        sql = """ALTER TABLE `%s` CHANGE `vdid` `vdid` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci """%(name)
-        self.cursor.execute(sql)
-        sql = """ALTER TABLE `%s` CHANGE `datacollecttime` `datacollecttime` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL""" % (name)
-        self.cursor.execute(sql)
-
+            sql = """ALTER TABLE `%s` CHANGE `vdid` `vdid` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci """%(name)
+            self.cursor.execute(sql)
+            sql = """ALTER TABLE `%s` CHANGE `time` `time` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL""" % (name)
+            self.cursor.execute(sql)
+        except:
+            print()
         now_time = name
 
     def insert_undivide(self, temp):
         global now_time
 
         # print(now_time)
-        sql = """INSERT INTO `%s` (vdid, datacollecttime, speed, laneoccupy, volume) VALUES %s"""%(now_time, temp)
+        sql = """INSERT INTO `%s` (vdid, time, lane_1_speed, lane_1_laneoccupy, lane_1_volume, lane_2_speed, lane_2_laneoccupy, lane_2_volume, lane_3_speed, lane_3_laneoccupy, lane_3_volume, lane_4_speed, lane_4_laneoccupy, lane_4_volume, lane_5_speed, lane_5_laneoccupy, lane_5_volume, lane_6_speed, lane_6_laneoccupy, lane_6_volume) VALUES %s"""%(now_time, temp)
         # val = temp
         try:
             # print(temp)

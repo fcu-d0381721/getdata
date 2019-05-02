@@ -10,10 +10,10 @@ from decimal import getcontext, Decimal
 import numpy as np
 import time
 import socket
-from dbconnect_for_new import connectDB
+from ff import connectDB
 
 #要抓的時間區段
-EndDate = '20181231'
+EndDate = '20180101'
 StartDate = '20180101'
 end_date = ''
 minute_time = ''
@@ -25,37 +25,35 @@ def parseXML(tree, temp):
         try:
             for infos in tree:
                 for info in infos:
-                    undivided_total_speed = 0
-                    undivide_total_laneoccupy = 0
-                    undivided_total_volume = 0
-
+                    data = []
+                    cnt = 0
+                    data.append(info.attrib["vdid"])
+                    data.append(info.attrib["datacollecttime"])
                     for lane in info:
+                        undivided_total_volume = 0
                         now_speed = int(lane.attrib["speed"])
                         now_laneoccupy = int(lane.attrib["laneoccupy"])
                         if now_speed < 0:
                             now_speed = 0
                             now_laneoccupy = 0
+                        data.append(now_speed)
+                        data.append(now_laneoccupy)
                         for cars in lane:
-                            undivided_total_speed += now_speed * int(cars.attrib["volume"])
-                            undivide_total_laneoccupy += now_laneoccupy * int(cars.attrib["volume"])
-                            if int(cars.attrib["volume"]) >= 0:
-                                undivided_total_volume += int(cars.attrib["volume"])
-
-                    if undivided_total_volume != 0:
-                        undivided_total_speed = Decimal(undivided_total_speed / undivided_total_volume).quantize(
-                            Decimal('0.00'))
-                        undivide_total_laneoccupy = Decimal(
-                            (undivide_total_laneoccupy / undivided_total_volume) / 1.21).quantize(
-                            Decimal('0.00'))
-
-                    temp.setdefault(info.attrib["vdid"], []).append(
-                        tuple([info.attrib["vdid"], info.attrib["datacollecttime"],
-                               str(undivided_total_speed), str(undivide_total_laneoccupy),
-                               str(undivided_total_volume * 60)]))
+                            now_volume = int(cars.attrib["volume"])
+                            if now_volume >= 0:
+                                undivided_total_volume += now_volume
+                        data.append(undivided_total_volume)
+                        cnt += 1
+                    while cnt != 6:
+                        data.append(0)
+                        data.append(0)
+                        data.append(0)
+                        cnt += 1
+                    # print(data)
+                    temp.setdefault(info.attrib["vdid"], []).append(tuple(data))
 
         except Exception as e:
             print(e)
-            print('----------------------------------------------------------------------------' + end_date + " " + minute_time)
             continue
         break
     return temp
@@ -68,6 +66,7 @@ def UpAndInsert(x, createmonth, temp):
         # print(result)
         t = str(createmonth) + "-" + str(i)
         if t not in result:
+            print(t)
             x.create(t)
             data = temp.get(str(i))
             data = str(data)[1:-1]
@@ -92,7 +91,7 @@ def TimeToSearch():
 
     # 處理小時
     EndTime = datetime.datetime.strptime('2359', "%H%M")
-    StartTime = datetime.datetime.strptime('0000', "%H%M")
+    StartTime = datetime.datetime.strptime('2358', "%H%M")
     substract_time = EndTime - StartTime + datetime.timedelta(minutes=1)
     total_minutes = math.floor((substract_time.total_seconds() / 60))
 
@@ -130,7 +129,7 @@ def main():
                     if count < 5:
                         count += 1
                         print(e)
-                        print('----------------------------------------------------------------------------' + end_date + " " + minutemen)
+                        print('---------------------------------------' + end_date + " " + minutemen)
                         continue
                     else:
                         count = 0
