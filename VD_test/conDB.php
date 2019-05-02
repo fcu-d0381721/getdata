@@ -13,7 +13,7 @@ define("DB_NAME", "unDivide");
 
 class DBClass {
 
-    var $conn,$flag = 0,$select_result = array(),$create_result = array(),$temp_result = array();
+    var $conn,$flag = 0,$select_result = array(),$create_result = array(),$temp_result = array(),$tt = array();
     
     public function __construct() {
         $this->connect();
@@ -60,6 +60,44 @@ class DBClass {
         return is_object($properties) ? $properties->name : false;
     }
 
+    public function data_clear(){
+        $temp = array();
+        $temp[0] = "Number";
+        $temp[1] = "Vdid";
+        $temp[2] = "Time";
+        $temp[3] = "Speed";
+        $temp[4] = "Laneoccupy";
+        $temp[5] = "Volume";
+        array_push($this->tt,$temp);
+        for($i=1;$i<count($this->select_result);$i++){
+            $temp = array();
+            // print_r($this->select_result[$i]);
+            $total_volume = 0;
+            $total_speed = 0;
+            $total_laneoccupy = 0;
+            for($j=5;$j<=20;$j+=3){
+                $total_volume += $this->select_result[$i][$j];
+            }
+            for($j=3;$j<=20;$j+=3){
+                $total_speed += $this->select_result[$i][$j]*$this->select_result[$i][$j+2];
+            }
+            for($j=4;$j<=19;$j+=3){
+                $total_laneoccupy += $this->select_result[$i][$j]*$this->select_result[$i][$j+1];
+            }
+            if($total_volume>0){
+                $total_speed = $total_speed/$total_volume;
+                $total_laneoccupy = $total_laneoccupy/$total_volume;
+            }
+            $temp[0] = $this->select_result[$i][0];
+            $temp[1] = $this->select_result[$i][1];
+            $temp[2] = $this->select_result[$i][2];
+            $temp[3] = $total_speed;
+            $temp[4] = $total_laneoccupy;
+            $temp[5] = $total_volume;
+            array_push($this->tt,$temp);
+        }
+        // print_r($this->tt);
+    }
     public function queryforsinglemonth($table,$startday,$howmanyday){
 
         $data = '';
@@ -67,7 +105,7 @@ class DBClass {
         $header = array();
         
         while($howmanyday>=0){
-            $sql = "SELECT * FROM `".$table."` WHERE `datacollecttime` LIKE '".$startday."%'"; 
+            $sql = "SELECT * FROM `".$table."` WHERE `time` LIKE '".$startday."%'"; 
             $res = mysqli_query($this->conn, $sql);
             if ($this->flag ==0){
                 $num_fields = mysqli_num_fields($res);
@@ -95,6 +133,7 @@ class DBClass {
         $this->select_result = array();
         $this->flag = 0;
         $this->create_result = array();
+        $this->tt = array();
     }
     public function get_diff_array_by_filter($arr1,$arr2){
         try{
@@ -128,7 +167,7 @@ class DBClass {
             }
             while($howmanyday>=0) {
                 $newyear = str_replace("-","/",$year.$endday);
-                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `datacollecttime` LIKE '".$newyear."%'";
+                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `time` LIKE '".$newyear."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {
@@ -140,7 +179,7 @@ class DBClass {
             }
             while($howmanyday_forfirst>0) {
                 $deleteday = str_replace("-","/",$temp.$endday);
-                $sql = "SELECT * FROM `".$temp."-".$table."` WHERE `datacollecttime` LIKE '".$deleteday."%'";
+                $sql = "SELECT * FROM `".$temp."-".$table."` WHERE `time` LIKE '".$deleteday."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {
@@ -186,7 +225,7 @@ class DBClass {
             }
             while($howmanyday>=0){
                 $newyear = str_replace("-","/",$year.$endday);
-                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `datacollecttime` LIKE '".$newyear."%'";
+                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `time` LIKE '".$newyear."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {

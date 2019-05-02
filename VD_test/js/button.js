@@ -96,7 +96,7 @@ $( document ).ready(function() {
             console.log(complete.second_value);
             console.log(complete.third_value);
             $.ajax({ 
-                'url': 'download.php',
+                'url': 'dowandclear.php',
                 'type': 'POST', 
                 'data': {
                     "date":complete.first_value,
@@ -104,11 +104,15 @@ $( document ).ready(function() {
                 }, 
                 'dataType': 'text', 
                 'success': function(result){ 
+
                     console.log("success third"); 
                     $('.row .temp').remove();
                     $('ol').remove();
                     var jsonObject = JSON.stringify(jQuery.parseJSON(result));
+                    // console.log(jsonObject)
                     var dataset = ConvertToCSV(jsonObject);
+                    // console.log(dataset)
+
                     if(complete.second_value.length>=2){
                         temp = SplitData(dataset,complete.second_value.length);
                         console.log(temp)
