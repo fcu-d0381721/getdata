@@ -105,7 +105,7 @@ class DBClass {
         $temp[4] = "Laneoccupy";
         $temp[5] = "Volume";
         array_push($this->tt,$temp);
-        for($i=1;$i<count($this->select_result[1]);$i++){
+        for($i=1;$i<count($this->select_result);$i++){
             $temp = array();
             $total_volume = 0;
             $total_speed = 0;

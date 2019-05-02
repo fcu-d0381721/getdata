@@ -2,9 +2,9 @@
     require 'conDB.php';
     $x = new DBClass();
 
-    $date = ["2018-01-01", "2018-01-01"];
+    // $date = ["2018-01-01", "2018-01-01"];
     // $vdid = ["nfbVD-N1-N-1-I-EN-1-基隆","nfbVD-N1-S-0.990-N-LOOP"];
-    // $date = $_POST['date'];
+    $date = $_POST['date'];
     $vdid = $_POST['vdid'];
     
     $stack = array();

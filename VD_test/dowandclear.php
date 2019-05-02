@@ -2,10 +2,10 @@
     require 'conDB.php';
     $x = new DBClass();
 
-    $date = ["2018-01-01", "2018-01-01"];
-    $vdid = ["nfbVD-N1-S-1.740-M-LOOP","nfbVD-N1-S-1.950-M-RS"];
-    // $date = $_POST['date'];
-    // $vdid = $_POST['vdid'];
+    // $date = ["2018-01-01", "2018-01-01"];
+    // $vdid = ["nfbVD-N1-S-1.740-M-LOOP","nfbVD-N1-S-1.950-M-RS"];
+    $date = $_POST['date'];
+    $vdid = $_POST['vdid'];
     
     $stack = array();
     $stack1 = array();
@@ -26,9 +26,9 @@
             $x->queryforsinglemonth($table,$startday,$howmanyday);
         }
         if(count($vdid)>1){
-            $x->data_clear();
-        }else{
             $x->data_clear_double();
+        }else{
+            $x->data_clear();
         }
     }else{
         foreach ($vdid as $value){
@@ -39,12 +39,11 @@
             $endday = $stack1[0]."/".$stack1[4]."/".$stack1[5];
             $howmanyday = (int)$stack1[5]-1;
             $x->queryformutlimonth($value,$year,$firstday,$startday,"/01",$howmanymonth,$howmanyday);
-            $x->data_clear_double();
         }
         if(count($vdid)>1){
-            $x->data_clear();
-        }else{
             $x->data_clear_double();
+        }else{
+            $x->data_clear();
         }
     }
     echo json_encode($x->tt);
