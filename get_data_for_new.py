@@ -15,8 +15,11 @@ from dbconnect_for_new import connectDB
 #要抓的時間區段
 EndDate = '20180101'
 StartDate = '20180101'
-end_date = ''
-minute_time = ''
+# end_date = ''
+# minute_time = ''
+end_min = '0002'
+str_min = '0000'
+vd = []
 
 
 def parseXML(tree, temp):
@@ -25,12 +28,19 @@ def parseXML(tree, temp):
         try:
             for infos in tree:
                 for info in infos:
+                    undivided_total_speed = 0
+                    undivide_total_laneoccupy = 0
+                    undivided_total_volume = 0
                     data = []
                     cnt = 0
+
                     data.append(info.attrib["vdid"])
-                    data.append(info.attrib["datacollecttime"])
+                    date = datetime.datetime.strptime(info.attrib["datacollecttime"], '%Y/%m/%d %H:%M:%S')
+                    data.append(str(date.date()))
+                    data.append(str(date.time()))
+                    # data.append(info.attrib["datacollecttime"])
                     for lane in info:
-                        undivided_total_volume = 0
+                        total_volume = 0
                         now_speed = int(lane.attrib["speed"])
                         now_laneoccupy = int(lane.attrib["laneoccupy"])
                         if now_speed < 0:
@@ -41,21 +51,48 @@ def parseXML(tree, temp):
                         for cars in lane:
                             now_volume = int(cars.attrib["volume"])
                             if now_volume >= 0:
+                                undivided_total_speed += now_speed * int(cars.attrib["volume"])
+                                undivide_total_laneoccupy += now_laneoccupy * int(cars.attrib["volume"])
                                 undivided_total_volume += now_volume
-                        data.append(undivided_total_volume)
+                                total_volume += now_volume
+                        data.append(total_volume)
                         cnt += 1
                     while cnt != 6:
                         data.append(0)
                         data.append(0)
                         data.append(0)
                         cnt += 1
-                    # print(data)
+                    if undivided_total_volume > 0:
+                        undivided_total_speed = undivided_total_speed / undivided_total_volume
+                        undivide_total_laneoccupy = undivide_total_laneoccupy / undivided_total_volume
+                    data.append(undivided_total_speed)
+                    data.append(undivide_total_laneoccupy)
+                    data.append(undivided_total_volume)
                     temp.setdefault(info.attrib["vdid"], []).append(tuple(data))
-
         except Exception as e:
             print(e)
             continue
         break
+    return temp
+
+
+def insertzero(end_date, minutemen, temp, vd):
+    day = datetime.datetime.strptime(end_date, '%Y%m%d')
+    time = datetime.datetime.strptime(minutemen, '%H%M')
+    for i in vd:
+        data = []
+        cnt = 0
+        data.append(i)
+        data.append(str(day.date()))
+        data.append(str(time.time()))
+        while cnt != 6:
+            data.append(0)
+            data.append(0)
+            data.append(0)
+            cnt += 1
+        temp.setdefault(i, []).append(tuple(data))
+        cnt = 0
+    # print(temp)
     return temp
 
 
@@ -66,7 +103,7 @@ def UpAndInsert(x, createmonth, temp):
         # print(result)
         t = str(createmonth) + "-" + str(i)
         if t not in result:
-            print(t)
+            # print(t)
             x.create(t)
             data = temp.get(str(i))
             data = str(data)[1:-1]
@@ -82,7 +119,8 @@ def UpAndInsert(x, createmonth, temp):
 
 def TimeToSearch():
 
-    global EndDate, StartDate, end_date, minute_time
+    global EndDate, StartDate, str_min, end_min
+        # , end_date, minute_time
 
     StartDate = datetime.datetime.strptime(StartDate, "%Y%m%d")
     EndDate = datetime.datetime.strptime(EndDate, "%Y%m%d")
@@ -90,8 +128,8 @@ def TimeToSearch():
     total_days = math.floor((substract_time_day.total_seconds() / 86400))
 
     # 處理小時
-    EndTime = datetime.datetime.strptime('2359', "%H%M")
-    StartTime = datetime.datetime.strptime('2358', "%H%M")
+    EndTime = datetime.datetime.strptime(end_min, "%H%M")
+    StartTime = datetime.datetime.strptime(str_min, "%H%M")
     substract_time = EndTime - StartTime + datetime.timedelta(minutes=1)
     total_minutes = math.floor((substract_time.total_seconds() / 60))
 
@@ -111,7 +149,7 @@ def main():
         end_date = end_date.strftime("%Y%m%d")
         print(end_date)
         for minute in range(0, time_data[1]):
-            print(minute)
+            # print(minute)
             minutemen = time_data[2] + datetime.timedelta(minutes=minute)
             minutemen = minutemen.strftime("%H%M")
             while True:
@@ -119,11 +157,11 @@ def main():
                     headers = {'user-agent': '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36'}
                     result = requests.get("http://tisvcloud.freeway.gov.tw/history/vd/" + str(end_date) + "/vd_value_" + str(minutemen) + ".xml.gz", headers=headers)
                     result.encoding = 'utf8'
-                    # jsonData +=\
                     sitemap = gzip.GzipFile(fileobj=BytesIO(result.content))
                     root = ET.parse(sitemap)
                     tree = root.getroot()
                     temp = parseXML(tree, temp)
+                    vd = list(temp.keys())
                     result.close()
                 except Exception as e:
                     if count < 5:
@@ -132,6 +170,7 @@ def main():
                         print('---------------------------------------' + end_date + " " + minutemen)
                         continue
                     else:
+                        temp = insertzero(end_date, minutemen, temp, vd)
                         count = 0
                         break
                 break

@@ -64,35 +64,21 @@ class DBClass {
         $temp = array();
         $temp[0] = "Number";
         $temp[1] = "Vdid";
-        $temp[2] = "Time";
-        $temp[3] = "Speed";
-        $temp[4] = "Laneoccupy";
-        $temp[5] = "Volume";
+        $temp[2] = "Day";
+        $temp[3] = "Time";
+        $temp[4] = "Speed";
+        $temp[5] = "Laneoccupy";
+        $temp[6] = "Volume";
         array_push($this->tt,$temp);
         for($i=1;$i<count($this->select_result);$i++){
             $temp = array();
-            $total_volume = 0;
-            $total_speed = 0;
-            $total_laneoccupy = 0;
-            for($j=5;$j<=20;$j+=3){
-                $total_volume += $this->select_result[$i][$j];
-            }
-            for($j=3;$j<=20;$j+=3){
-                $total_speed += $this->select_result[$i][$j]*$this->select_result[$i][$j+2];
-            }
-            for($j=4;$j<=19;$j+=3){
-                $total_laneoccupy += $this->select_result[$i][$j]*$this->select_result[$i][$j+1];
-            }
-            if($total_volume>0){
-                $total_speed = $total_speed/$total_volume;
-                $total_laneoccupy = $total_laneoccupy/$total_volume;
-            }
             $temp[0] = $this->select_result[$i][0];
             $temp[1] = $this->select_result[$i][1];
             $temp[2] = $this->select_result[$i][2];
-            $temp[3] = $total_speed;
-            $temp[4] = $total_laneoccupy;
-            $temp[5] = $total_volume;
+            $temp[3] = $this->select_result[$i][3];
+            $temp[4] = round($this->select_result[$i][22], 1);
+            $temp[5] = round($this->select_result[$i][23], 1);
+            $temp[6] = round($this->select_result[$i][24], 1);
             array_push($this->tt,$temp);
         }
     }
@@ -100,35 +86,21 @@ class DBClass {
         $temp = array();
         $temp[0] = "Number";
         $temp[1] = "Vdid";
-        $temp[2] = "Time";
-        $temp[3] = "Speed";
-        $temp[4] = "Laneoccupy";
-        $temp[5] = "Volume";
+        $temp[2] = "Day";
+        $temp[3] = "Time";
+        $temp[4] = "Speed";
+        $temp[5] = "Laneoccupy";
+        $temp[6] = "Volume";
         array_push($this->tt,$temp);
         for($i=1;$i<count($this->select_result);$i++){
             $temp = array();
-            $total_volume = 0;
-            $total_speed = 0;
-            $total_laneoccupy = 0;
-            for($j=5;$j<=20;$j+=3){
-                $total_volume += $this->select_result[$i][$j];
-            }
-            for($j=3;$j<=20;$j+=3){
-                $total_speed += $this->select_result[$i][$j]*$this->select_result[$i][$j+2];
-            }
-            for($j=4;$j<=19;$j+=3){
-                $total_laneoccupy += $this->select_result[$i][$j]*$this->select_result[$i][$j+1];
-            }
-            if($total_volume>0){
-                $total_speed = $total_speed/$total_volume;
-                $total_laneoccupy = $total_laneoccupy/$total_volume;
-            }
             $temp[0] = $this->select_result[$i][0];
             $temp[1] = $this->select_result[$i][1];
             $temp[2] = $this->select_result[$i][2];
-            $temp[3] = $total_speed;
-            $temp[4] = $total_laneoccupy;
-            $temp[5] = $total_volume;
+            $temp[3] = $this->select_result[$i][3];
+            $temp[4] = round($this->select_result[$i][22], 1);
+            $temp[5] = round($this->select_result[$i][23], 1);
+            $temp[6] = round($this->select_result[$i][24], 1);
             array_push($this->tt,$temp);
         }
     }
@@ -139,11 +111,10 @@ class DBClass {
         $header = array();
         
         while($howmanyday>=0){
-            $sql = "SELECT * FROM `".$table."` WHERE `time` LIKE '".$startday."%'"; 
+            $sql = "SELECT * FROM `".$table."` WHERE `day` LIKE '".$startday."'"; 
             $res = mysqli_query($this->conn, $sql);
             if ($this->flag ==0){
                 $num_fields = mysqli_num_fields($res);
-            
                 for ($i = 0; $i < $num_fields; $i++) {
                     $header[] = $this->mysqli_field_name( $res , $i ) . "\t";   
                 }
@@ -201,7 +172,7 @@ class DBClass {
             }
             while($howmanyday>=0) {
                 $newyear = str_replace("-","/",$year.$endday);
-                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `time` LIKE '".$newyear."%'";
+                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `day` LIKE '".$newyear."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {
@@ -213,7 +184,7 @@ class DBClass {
             }
             while($howmanyday_forfirst>0) {
                 $deleteday = str_replace("-","/",$temp.$endday);
-                $sql = "SELECT * FROM `".$temp."-".$table."` WHERE `time` LIKE '".$deleteday."%'";
+                $sql = "SELECT * FROM `".$temp."-".$table."` WHERE `day` LIKE '".$deleteday."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {
@@ -259,7 +230,7 @@ class DBClass {
             }
             while($howmanyday>=0){
                 $newyear = str_replace("-","/",$year.$endday);
-                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `time` LIKE '".$newyear."%'";
+                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `day` LIKE '".$newyear."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {

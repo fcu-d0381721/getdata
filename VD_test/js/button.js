@@ -1,6 +1,7 @@
 $( document ).ready(function() {
 
     var selected = [];
+    var final = [];
     var complete = {
         first: false,
         second: false,
@@ -10,17 +11,48 @@ $( document ).ready(function() {
         third_value: false
     };
 
-    $("#datepicker_start").datepicker({
-        "dateFormat":"yy-mm-dd",
-        minDate:'2018-1-1',
-        maxDate:"2018-12-31"
-    });
+    // $("#datepicker_start").datepicker({
+    //     "dateFormat":"yy-mm-dd",
+    //     minDate:'2018-1-1',
+    //     maxDate:"2018-12-31"
+    // });
 
-    $("#datepicker_end").datepicker({
-        "dateFormat":"yy-mm-dd",
+    // $("#datepicker_end").datepicker({
+    //     "dateFormat":"yy-mm-dd",
+    //     minDate:document.getElementById('datepicker_start').value,
+    //     maxDate:"2018-12-31"
+    // });
+
+    from = $("#datepicker_start").datepicker({
+        dateFormat: "yy-mm-dd",
+        defaultDate: "2018-1-1",
         minDate:'2018-1-1',
-        maxDate:"2018-12-31"
+        maxDate:"2018-12-31",
+        changeMonth: true,
+        numberOfMonths: 1
+      }).on( "change", function() {
+        to.datepicker("option", "defaultDate", getDate(this));
+        to.datepicker("option", "minDate", getDate(this));
+      }),
+    to = $("#datepicker_end").datepicker({
+        dateFormat: "yy-mm-dd",
+        defaultDate: "+1w",
+        minDate:'2018-1-1',
+        maxDate:"2018-12-31",
+        changeMonth: true,
+        numberOfMonths: 1
+    }).on( "change", function() {
+      from.datepicker("option", "maxDate",  getDate(this));
     });
+    function getDate(element) {
+        var date;
+        try {
+          date = $.datepicker.parseDate("yy-mm-dd", element.value );
+        } catch(error) {
+          date = null;
+        }
+        return date;
+    }
 
     document.getElementById("reset").onclick = function() {
         $("#datepicker_start").val("");
@@ -53,7 +85,21 @@ $( document ).ready(function() {
         complete.third_value = [speed_small,time_limit,selectedTime,speed_big,time2_limit,selectedTime1,laneoccupy_big];
         allDone();
     };
-    
+
+    document.getElementById("error").onclick = function() {
+        console.log(final)
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        var blob = new Blob(["\ufeff",Convert(final)], {type: 'text/csv;'});
+        console.log(blob);
+        url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = 'test.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
     document.getElementById("download").onclick = function() {
         datepicker_start = document.getElementById('datepicker_start').value
         datepicker_end = document.getElementById('datepicker_end').value
@@ -113,6 +159,8 @@ $( document ).ready(function() {
                     if(complete.second_value.length>=2){
                         temp = SplitData(dataset,complete.second_value.length);
                         console.log(temp)
+                        final = []
+                        final.push(['Vdid','Day','Time','Speed','Laneoccupy','Volume'])
                         for (var i=0;i<complete.second_value.length;i++){
                             createcharts(i);
                             updateFromMultiCSV(temp[i], 'container', i);
@@ -182,6 +230,21 @@ $( document ).ready(function() {
             str += line + '\r\n';
         }
 
+        return str;
+    }
+    function Convert(objArray) {
+        var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+        var str = '';
+
+        for (var i = 0; i < array.length; i++) {
+            var line = '';
+            for (var index in array[i]) {
+                if (line != '') line += ','
+
+                line += array[i][index];
+            }
+            str += line+ '\n';
+        }
         return str;
     }
 
@@ -260,8 +323,8 @@ $( document ).ready(function() {
             if (temp==""){
                 name.push(fields[1]);
                 temp = fields[1];
-                speed.push([fields[2],parseFloat(fields[3])]);
-                volume.push([fields[2],parseFloat(fields[5])]);
+                speed.push([fields[2]+" "+fields[3],parseFloat(fields[4])]);
+                volume.push([fields[2]+" "+fields[3],parseFloat(fields[6])]);
             }else if(temp!=fields[1]){
                 total_speed.push(speed);
                 total_volume.push(volume);
@@ -271,130 +334,131 @@ $( document ).ready(function() {
                     name.push(fields[1]);
                 }
                 temp = fields[1];
-                speed.push([fields[2],parseFloat(fields[3])]);
-                volume.push([fields[2],parseFloat(fields[5])]);
+                speed.push([fields[2]+" "+fields[3],parseFloat(fields[4])]);
+                volume.push([fields[2]+" "+fields[3],parseFloat(fields[6])]);
             }else{
                 // date.push(fields[2]);
-                speed.push([fields[2],parseFloat(fields[3])]);
-                volume.push([fields[2],parseFloat(fields[5])]);
+                speed.push([fields[2]+" "+fields[3],parseFloat(fields[4])]);
+                volume.push([fields[2]+" "+fields[3],parseFloat(fields[6])]);
             }
             
             if (second_filter.speed_queue.size()<second_filter.speed_time-1) {
-                second_filter.speed_queue.enqueue(parseFloat(fields[3]));
+                second_filter.speed_queue.enqueue(parseFloat(fields[4]));
             }else{
                 var max = second_filter.speed_queue.max()
-                if(max >= parseFloat(fields[3]) + parseFloat(complete.third_value[3])){
+                if(max >= parseFloat(fields[4]) + parseFloat(complete.third_value[3])){
                     second_filter.speed_filter.push(fields[0])
                     second_filter.speed_queue.dequeue();
-                    second_filter.speed_queue.enqueue(parseFloat(fields[3]));
+                    second_filter.speed_queue.enqueue(parseFloat(fields[4]));
                 }else{
                     second_filter.speed_queue.dequeue();
-                    second_filter.speed_queue.enqueue(parseFloat(fields[3]));
+                    second_filter.speed_queue.enqueue(parseFloat(fields[4]));
                 }
             }
             if (third_filter.lane_queue.size()<third_filter.lane_time-1) {
-                third_filter.lane_queue.enqueue(parseFloat(fields[5]));
+                third_filter.lane_queue.enqueue(parseFloat(fields[6]));
             }else{
                 var min = third_filter.lane_queue.min()
-                if(min >= parseFloat(fields[5]) * parseFloat(complete.third_value[6])){
+                if(min >= parseFloat(fields[6]) * parseFloat(complete.third_value[6])){
                     third_filter.lane_filter.push(fields[0])
                     third_filter.lane_queue.dequeue();
-                    third_filter.lane_queue.enqueue(parseFloat(fields[5]));
+                    third_filter.lane_queue.enqueue(parseFloat(fields[6]));
                 }else{
                     third_filter.lane_queue.dequeue();
-                    third_filter.lane_queue.enqueue(parseFloat(fields[5]));
+                    third_filter.lane_queue.enqueue(parseFloat(fields[6]));
                 }
             }
             if (first_filter.flag){
-                if(fields[3] < complete.third_value[0]){
+                if(fields[4] < complete.third_value[0]){
                     first_filter.filter.push(fields[0])
                 }
             }
         });
-
+        final = []
+        final.push(['Vdid','Day','Time','Speed','Laneoccupy','Volume'])
         if(second_filter.speed_flag&&third_filter.lane_flag&&first_filter.flag){
             var c = second_filter.speed_filter.filter(function(v){ return third_filter.lane_filter.indexOf(v) > -1 })
             c = c.filter(function(v){ return first_filter.filter.indexOf(v) > -1 })
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(second_filter.speed_flag&&third_filter.lane_flag){
             c = second_filter.speed_filter.filter(function(v){ return third_filter.lane_filter.indexOf(v) > -1 })
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(third_filter.lane_flag&&first_filter.flag){
             c = third_filter.lane_filter.filter(function(v){ return first_filter.filter.indexOf(v) > -1 })
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(second_filter.speed_flag&&first_filter.flag){
             c = second_filter.speed_filter.filter(function(v){ return first_filter.filter.indexOf(v) > -1 })
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(third_filter.lane_flag){
             var c = third_filter.lane_filter
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(second_filter.speed_flag){
             var c = second_filter.speed_filter
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(first_filter.flag){
             var c = first_filter.filter
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }
@@ -473,130 +537,129 @@ $( document ).ready(function() {
             var fields = row.split(",");
             
             name = fields[1]
-            speed.push([fields[2],parseFloat(fields[3])]);
-            volume.push([fields[2],parseFloat(fields[5])]);
+            speed.push([fields[2]+" "+fields[3],parseFloat(fields[4])]);
+            volume.push([fields[2]+" "+fields[3],parseFloat(fields[6])]);
             
             
             if (second_filter.speed_queue.size()<second_filter.speed_time-1) {
-                second_filter.speed_queue.enqueue(parseFloat(fields[3]));
+                second_filter.speed_queue.enqueue(parseFloat(fields[4]));
             }else{
                 var max = second_filter.speed_queue.max()
-                if(max >= parseFloat(fields[3]) + parseFloat(complete.third_value[3])){
+                if(max >= parseFloat(fields[4]) + parseFloat(complete.third_value[3])){
                     second_filter.speed_filter.push(fields[0])
                     second_filter.speed_queue.dequeue();
-                    second_filter.speed_queue.enqueue(parseFloat(fields[3]));
+                    second_filter.speed_queue.enqueue(parseFloat(fields[4]));
                 }else{
                     second_filter.speed_queue.dequeue();
-                    second_filter.speed_queue.enqueue(parseFloat(fields[3]));
+                    second_filter.speed_queue.enqueue(parseFloat(fields[4]));
                 }
             }
             if (third_filter.lane_queue.size()<third_filter.lane_time-1) {
-                third_filter.lane_queue.enqueue(parseFloat(fields[5]));
+                third_filter.lane_queue.enqueue(parseFloat(fields[6]));
             }else{
                 var min = third_filter.lane_queue.min()
-                if(min >= parseFloat(fields[5]) * parseFloat(complete.third_value[6])){
+                if(min >= parseFloat(fields[6]) * parseFloat(complete.third_value[6])){
                     third_filter.lane_filter.push(fields[0])
                     third_filter.lane_queue.dequeue();
-                    third_filter.lane_queue.enqueue(parseFloat(fields[5]));
+                    third_filter.lane_queue.enqueue(parseFloat(fields[6]));
                 }else{
                     third_filter.lane_queue.dequeue();
-                    third_filter.lane_queue.enqueue(parseFloat(fields[5]));
+                    third_filter.lane_queue.enqueue(parseFloat(fields[6]));
                 }
             }
             if (first_filter.flag){
-                if(fields[3] < complete.third_value[0]){
+                if(fields[4] < complete.third_value[0]){
                     first_filter.filter.push(fields[0])
                 }
             }
         });
-
         if(second_filter.speed_flag&&third_filter.lane_flag&&first_filter.flag){
             var c = second_filter.speed_filter.filter(function(v){ return third_filter.lane_filter.indexOf(v) > -1 })
             c = c.filter(function(v){ return first_filter.filter.indexOf(v) > -1 })
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(second_filter.speed_flag&&third_filter.lane_flag){
             c = second_filter.speed_filter.filter(function(v){ return third_filter.lane_filter.indexOf(v) > -1 })
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(third_filter.lane_flag&&first_filter.flag){
             c = third_filter.lane_filter.filter(function(v){ return first_filter.filter.indexOf(v) > -1 })
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(second_filter.speed_flag&&first_filter.flag){
             c = second_filter.speed_filter.filter(function(v){ return first_filter.filter.indexOf(v) > -1 })
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(third_filter.lane_flag){
             var c = third_filter.lane_filter
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(second_filter.speed_flag){
             var c = second_filter.speed_filter
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }else if(first_filter.flag){
             var c = first_filter.filter
-            var final = []
+            
             $("#space"+seriesNumber).append("<li> 總計："+c.length+"筆<br/></li>");
  
             rows.forEach(function(row, index) {
                 var fields = row.split(",");
                 if(c.includes(fields[0])){
-                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5]])
-                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+","+fields[3]+","+fields[4]+","+fields[5]+"<br/></li>");
+                    final.push([fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]])
+                    $("#space"+seriesNumber).append("<li>"+fields[1]+","+fields[2]+" "+fields[3]+","+fields[4]+","+fields[5]+","+fields[6]+"<br/></li>");
                 }
             });
         }
-
+        
         while (chart.series.length > 0) {
             chart.series[0].remove(true);
         }
@@ -617,10 +680,8 @@ $( document ).ready(function() {
             name: 'volume',
             data: volume,
             color: 'purple'
-        });
-        
+        }); 
     }
-
     function Queue() {
         let items = [];
         this.enqueue = function(element) {

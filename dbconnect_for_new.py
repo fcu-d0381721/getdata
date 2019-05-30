@@ -58,6 +58,7 @@ class connectDB():
             sql = """CREATE TABLE `%s` (
                             Number INT NOT NULL AUTO_INCREMENT,
                             vdid  VARCHAR(191),
+                            day VARCHAR(191),
                             time VARCHAR(191),
                             lane_1_speed float,
                             lane_1_laneoccupy float,
@@ -77,10 +78,16 @@ class connectDB():
                             lane_6_speed float,
                             lane_6_laneoccupy float,
                             lane_6_volume float,
+                            total_speed float,
+                            total_laneoccupy float,
+                            total_volume float,
                              PRIMARY KEY (Number))"""%(name)
             self.cursor.execute(sql)
 
             sql = """ALTER TABLE `%s` CHANGE `vdid` `vdid` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci """%(name)
+            self.cursor.execute(sql)
+            sql = """ALTER TABLE `%s` CHANGE `day` `day` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL""" % (
+                name)
             self.cursor.execute(sql)
             sql = """ALTER TABLE `%s` CHANGE `time` `time` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL""" % (name)
             self.cursor.execute(sql)
@@ -92,7 +99,7 @@ class connectDB():
         global now_time
 
         # print(now_time)
-        sql = """INSERT INTO `%s` (vdid, time, lane_1_speed, lane_1_laneoccupy, lane_1_volume, lane_2_speed, lane_2_laneoccupy, lane_2_volume, lane_3_speed, lane_3_laneoccupy, lane_3_volume, lane_4_speed, lane_4_laneoccupy, lane_4_volume, lane_5_speed, lane_5_laneoccupy, lane_5_volume, lane_6_speed, lane_6_laneoccupy, lane_6_volume) VALUES %s"""%(now_time, temp)
+        sql = """INSERT INTO `%s` (vdid, day, time, lane_1_speed, lane_1_laneoccupy, lane_1_volume, lane_2_speed, lane_2_laneoccupy, lane_2_volume, lane_3_speed, lane_3_laneoccupy, lane_3_volume, lane_4_speed, lane_4_laneoccupy, lane_4_volume, lane_5_speed, lane_5_laneoccupy, lane_5_volume, lane_6_speed, lane_6_laneoccupy, lane_6_volume, total_speed, total_laneoccupy, total_volume) VALUES %s"""%(now_time, temp)
         # val = temp
         try:
             # print(temp)

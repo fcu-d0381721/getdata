@@ -31,7 +31,7 @@
                 <div class="col-6 costom">
                     <div id="leftbox">
                         <nav class="navbar navbar-light color-left">
-                                <span class="navbar-text font">車道篩選</span>
+                                <span class="navbar-text font">VD篩選</span>
                         </nav>
                         <p class = "font">日期選擇：<input type="text" id="datepicker_start">至<input type="text" id="datepicker_end"></p>
                         <div id="rightdown">
@@ -93,7 +93,8 @@
                         </div>
                         <div id="box">
                             <button type="button" class="btn btn-outline-dark font" id="reset">清除</button>
-                            <button type="button" class="btn btn-outline-info font-color" id="success">輸出圖檔</button> 
+                            <button type="button" class="btn btn-outline-info font-color" id="success">輸出圖檔</button>
+                            <button type="button" class="btn btn-outline-warning font-color" id="error">下載異常值</button> 
                         </div>
                     </div>
                 </div>
