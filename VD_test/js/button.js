@@ -369,7 +369,7 @@ $( document ).ready(function() {
                 }
             }
             if (first_filter.flag){
-                if(fields[4] < complete.third_value[0]){
+                if(fields[4] < parseFloat(complete.third_value[0])){
                     first_filter.filter.push(fields[0])
                 }
             }
@@ -568,7 +568,7 @@ $( document ).ready(function() {
                 }
             }
             if (first_filter.flag){
-                if(fields[4] < complete.third_value[0]){
+                if(fields[4] < parseFloat(complete.third_value[0])){
                     first_filter.filter.push(fields[0])
                 }
             }
