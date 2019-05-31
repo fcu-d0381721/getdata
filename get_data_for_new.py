@@ -90,6 +90,9 @@ def insertzero(end_date, minutemen, temp, vd):
             data.append(0)
             data.append(0)
             cnt += 1
+        data.append(0)
+        data.append(0)
+        data.append(0)
         temp.setdefault(i, []).append(tuple(data))
         cnt = 0
     # print(temp)
