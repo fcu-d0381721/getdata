@@ -1,7 +1,4 @@
 <?php
-
-
-
 ini_set('memory_limit', '-1');
 ini_set('max_execution_time','0');
 
@@ -38,7 +35,7 @@ class DBClass {
     }
 
     public function getinfo(){
-        $sql = "SELECT * FROM `info`"; 
+        $sql = "SELECT * FROM info"; 
         $res = mysqli_query($this->conn, $sql);
         if (mysqli_num_rows($res) > 0) { 
             $count = 0;
@@ -111,7 +108,7 @@ class DBClass {
         $header = array();
         
         while($howmanyday>=0){
-            $sql = "SELECT * FROM `".$table."` WHERE `day` LIKE '".$startday."'"; 
+            $sql = "SELECT * FROM ".$table." WHERE day LIKE '".$startday."'"; 
             $res = mysqli_query($this->conn, $sql);
             if ($this->flag ==0){
                 $num_fields = mysqli_num_fields($res);
@@ -128,7 +125,7 @@ class DBClass {
                     // fputcsv($fp, array_values($row));
                 }
             }
-            $startday = date('Y/m/d',strtotime($startday . "+1 days"));
+            $startday = date('Y-m-d',strtotime($startday . "+1 days"));
             $howmanyday = $howmanyday - 1;
         } 
         
@@ -160,7 +157,7 @@ class DBClass {
         if ($firstday!="01"){
             $howmanyday_forfirst = (int)$firstday-1;
             while($howmanymonth>0) {
-                $sql = "SELECT * FROM `".$year."-".$table."`"; 
+                $sql = "SELECT * FROM ".$year."-".$table.""; 
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {
@@ -170,28 +167,28 @@ class DBClass {
                 $year = date('Y-m',strtotime($year . "+1 months"));
                 $howmanymonth = $howmanymonth - 1;
             }
+            $newyear = str_replace("/","-",$year.$endday);
             while($howmanyday>=0) {
-                $newyear = str_replace("-","/",$year.$endday);
-                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `day` LIKE '".$newyear."%'";
+                $sql = "SELECT * FROM ".$year."-".$table." WHERE day LIKE '".$newyear."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {
                         array_push($this->temp_result,$row);
                     }
                 }
-                $newyear = date('Y/m/d',strtotime($newyear . "+1 days"));
+                $newyear = date('Y-m-d',strtotime($newyear . "+1 days"));
                 $howmanyday = $howmanyday - 1;
             }
+            $deleteday = str_replace("/","-",$temp.$endday);
             while($howmanyday_forfirst>0) {
-                $deleteday = str_replace("-","/",$temp.$endday);
-                $sql = "SELECT * FROM `".$temp."-".$table."` WHERE `day` LIKE '".$deleteday."%'";
+                $sql = "SELECT * FROM ".$temp."-".$table." WHERE day LIKE '".$deleteday."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {
                         array_push($this->create_result,$row);
                     }
                 }
-                $deleteday = date('Y/m/d',strtotime($deleteday . "+1 days"));
+                $deleteday = date('Y-m-d',strtotime($deleteday . "+1 days"));
                 $howmanyday_forfirst = $howmanyday_forfirst - 1;
             }
             $this->temp_result = $this->get_diff_array_by_filter($this->temp_result,$this->create_result);
@@ -208,7 +205,7 @@ class DBClass {
             $this->select_result = array_merge($this->select_result,$this->temp_result);
         }else{
             while($howmanymonth>0){
-                $sql = "SELECT * FROM `".$year."-".$table."`"; 
+                $sql = "SELECT * FROM ".$year."-".$table.""; 
                 $res = mysqli_query($this->conn, $sql);
                 if ($this->flag ==0){
                     $num_fields = mysqli_num_fields($res);
@@ -228,16 +225,16 @@ class DBClass {
                 $year = date('Y-m',strtotime($year . "+1 months"));
                 $howmanymonth = $howmanymonth - 1;
             }
+            $newyear = str_replace("/","-",$year.$endday);
             while($howmanyday>=0){
-                $newyear = str_replace("-","/",$year.$endday);
-                $sql = "SELECT * FROM `".$year."-".$table."` WHERE `day` LIKE '".$newyear."%'";
+                $sql = "SELECT * FROM ".$year."-".$table." WHERE day LIKE '".$newyear."%'";
                 $res = mysqli_query($this->conn, $sql);
                 if ($res) {
                     while ($row = mysqli_fetch_row($res)) {
                         array_push($this->select_result,$row);
                     }
                 }
-                $newyear = date('Y/m/d',strtotime($newyear . "+1 days"));
+                $newyear = date('Y-m-d',strtotime($newyear . "+1 days"));
                 $howmanyday = $howmanyday - 1;
             }
         }

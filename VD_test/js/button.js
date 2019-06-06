@@ -95,7 +95,7 @@ $( document ).ready(function() {
         console.log(blob);
         url = window.URL.createObjectURL(blob);
         a.href = url;
-        a.download = 'test.csv';
+        a.download = 'error.csv';
         a.click();
         window.URL.revokeObjectURL(url);
     };
@@ -204,7 +204,7 @@ $( document ).ready(function() {
                     console.log(blob);
                     url = window.URL.createObjectURL(blob);
                     a.href = url;
-                    a.download = 'test.csv';
+                    a.download = 'vd.csv';
                     a.click();
                     window.URL.revokeObjectURL(url);
                 }, 
@@ -295,7 +295,6 @@ $( document ).ready(function() {
         rows = csv.split("\n")
         eachone = rows[0].split(",");
         rows.shift();
-        // rows.pop();
         var temp = ""
         if(complete.third_value[1]!=""&&complete.third_value[3]!=""){
             second_filter.speed_flag = true
@@ -508,10 +507,12 @@ $( document ).ready(function() {
             filter : [],
             flag : false
         }
+
         var name = []
         var speed = []
         var volume = []
         var rows = csv
+
         if(complete.third_value[1]!=""&&complete.third_value[3]!=""){
             second_filter.speed_flag = true
         }
@@ -534,45 +535,49 @@ $( document ).ready(function() {
 
         rows.forEach(function(row, index) {
             // console.log(row)
-            var fields = row.split(",");
-            
-            name = fields[1]
-            speed.push([fields[2]+" "+fields[3],parseFloat(fields[4])]);
-            volume.push([fields[2]+" "+fields[3],parseFloat(fields[6])]);
-            
-            
-            if (second_filter.speed_queue.size()<second_filter.speed_time-1) {
-                second_filter.speed_queue.enqueue(parseFloat(fields[4]));
-            }else{
-                var max = second_filter.speed_queue.max()
-                if(max >= parseFloat(fields[4]) + parseFloat(complete.third_value[3])){
-                    second_filter.speed_filter.push(fields[0])
-                    second_filter.speed_queue.dequeue();
+            if (typeof(row) != "undefined"){
+
+                var fields = row.split(",");
+
+                name = fields[1]
+                speed.push([fields[2]+" "+fields[3],parseFloat(fields[4])]);
+                volume.push([fields[2]+" "+fields[3],parseFloat(fields[6])]);
+
+
+                if (second_filter.speed_queue.size()<second_filter.speed_time-1) {
                     second_filter.speed_queue.enqueue(parseFloat(fields[4]));
                 }else{
-                    second_filter.speed_queue.dequeue();
-                    second_filter.speed_queue.enqueue(parseFloat(fields[4]));
+                    var max = second_filter.speed_queue.max()
+                    if(max >= parseFloat(fields[4]) + parseFloat(complete.third_value[3])){
+                        second_filter.speed_filter.push(fields[0])
+                        second_filter.speed_queue.dequeue();
+                        second_filter.speed_queue.enqueue(parseFloat(fields[4]));
+                    }else{
+                        second_filter.speed_queue.dequeue();
+                        second_filter.speed_queue.enqueue(parseFloat(fields[4]));
+                    }
                 }
-            }
-            if (third_filter.lane_queue.size()<third_filter.lane_time-1) {
-                third_filter.lane_queue.enqueue(parseFloat(fields[6]));
-            }else{
-                var min = third_filter.lane_queue.min()
-                if(min >= parseFloat(fields[6]) * parseFloat(complete.third_value[6])){
-                    third_filter.lane_filter.push(fields[0])
-                    third_filter.lane_queue.dequeue();
+                if (third_filter.lane_queue.size()<third_filter.lane_time-1) {
                     third_filter.lane_queue.enqueue(parseFloat(fields[6]));
                 }else{
-                    third_filter.lane_queue.dequeue();
-                    third_filter.lane_queue.enqueue(parseFloat(fields[6]));
+                    var min = third_filter.lane_queue.min()
+                    if(min >= parseFloat(fields[6]) * parseFloat(complete.third_value[6])){
+                        third_filter.lane_filter.push(fields[0])
+                        third_filter.lane_queue.dequeue();
+                        third_filter.lane_queue.enqueue(parseFloat(fields[6]));
+                    }else{
+                        third_filter.lane_queue.dequeue();
+                        third_filter.lane_queue.enqueue(parseFloat(fields[6]));
+                    }
                 }
-            }
-            if (first_filter.flag){
-                if(fields[4] < parseFloat(complete.third_value[0])){
-                    first_filter.filter.push(fields[0])
+                if (first_filter.flag){
+                    if(fields[4] < parseFloat(complete.third_value[0])){
+                        first_filter.filter.push(fields[0])
+                    }
                 }
-            }
-        });
+             }
+         });
+
         if(second_filter.speed_flag&&third_filter.lane_flag&&first_filter.flag){
             var c = second_filter.speed_filter.filter(function(v){ return third_filter.lane_filter.indexOf(v) > -1 })
             c = c.filter(function(v){ return first_filter.filter.indexOf(v) > -1 })

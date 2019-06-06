@@ -39,7 +39,7 @@
             $startday = $stack1[0]."-".$stack1[1]."-".$stack1[2];
             $endday = $stack1[0]."-".$stack1[4]."-".$stack1[5];
             $howmanyday = (int)$stack1[5]-1;
-            $x->queryformutlimonth($value,$year,$firstday,$startday,"/01",$howmanymonth,$howmanyday);
+            $x->queryformutlimonth($value,$year,$firstday,$startday,"-01",$howmanymonth,$howmanyday);
         }
         if(count($vdid)>1){
             $x->data_clear_double();
